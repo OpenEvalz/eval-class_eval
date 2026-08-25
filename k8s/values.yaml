@@ -1,0 +1,43 @@
+# Kubernetes sandbox profile — class_eval
+# Generated from the eval's own compose spec in inspect_evals. Image references
+# and the network posture below are what upstream actually declares, not defaults.
+version: 1
+eval: class_eval
+readiness: ready-to-pin
+runtimeClass: gvisor
+
+services:
+  default:
+    image: ghcr.io/generality-labs/inspect-eval-class_eval:2026-07-28@sha256:d40b26396195eb457a34aa1c4f50b58c44a489351a58a240eb09d82e39b48915
+    pinned: true
+    network_mode: none
+
+egress:
+  default: deny
+  allow: []
+  # Upstream declares network_mode: none for this eval, so an empty allowlist
+  # is the CORRECT configuration, not an unfinished one. Do not add hosts
+  # without evidence that the task genuinely needs them.
+  enforce_sni: true
+  tcp_only: true
+
+# WARNING: never set allowDomains to ["*"]. The upstream chart's
+# `{{- if has "*" .Values.allowDomains }}` branch drops toPorts entirely — no SNI,
+# no Host regex, all ports and protocols — and degenerates DNS to matchPattern "*".
+# A wildcard silently disables the entire outer egress ring.
+
+# Models are NEVER called from the sandbox — Inspect's runner makes model calls.
+# The TrustedRouter gateway must not appear in any allowlist above.
+
+resources:
+  requests: { cpu: "1", memory: "4Gi", ephemeral-storage: "8Gi" }
+  limits:   { cpu: "1", memory: "4Gi", ephemeral-storage: "8Gi" }   # Guaranteed QoS
+
+security:
+  automountServiceAccountToken: false
+  serviceAccountCreate: false
+  seccompProfile: RuntimeDefault
+
+# gVisor changes behaviour: it blocks raw packet creation, prevents chroot escapes
+# and breaks sshpass. A model scoring zero because a syscall was blocked is a wrong
+# published result, not a model failure. Classify and record at onboarding.
