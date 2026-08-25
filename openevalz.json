@@ -1,0 +1,47 @@
+{
+  "openevalz_version": 1,
+  "eval": {
+    "id": "class_eval",
+    "slug": "class-eval",
+    "title": "ClassEval: A Manually-Crafted Benchmark for Evaluating LLMs on Class-level Code Generation",
+    "group": "Coding",
+    "tags": [],
+    "source": "core"
+  },
+  "upstream": {
+    "repo": "https://github.com/UKGovernmentBEIS/inspect_evals",
+    "path": "src/inspect_evals/class_eval",
+    "inspect_ai": "0.3.260",
+    "eval_version": "3-C",
+    "dependency": ""
+  },
+  "execution": {
+    "class": "sandbox-local",
+    "cost_class": "high",
+    "sandbox": [
+      "scorer"
+    ],
+    "requires_internet": false,
+    "fast": false,
+    "supports_k8s": false,
+    "environment": ""
+  },
+  "tasks": [
+    {
+      "name": "class_eval",
+      "samples": 100
+    }
+  ],
+  "total_samples": 100,
+  "external_assets": [
+    {
+      "type": "huggingface",
+      "source": "FudanSELab/ClassEval",
+      "state": "pinned"
+    }
+  ],
+  "scaffolds": [
+    "baseline"
+  ],
+  "generated": "2026-08-25"
+}
